@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import { StatusBadge, PriorityBadge } from "../components/StatusBadge";
+import { useConfirm } from "../context/ConfirmContext";
 
 export default function TicketDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const confirm = useConfirm();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
@@ -71,7 +74,7 @@ export default function TicketDetail() {
 
         <p className="ticket-detail-desc">{ticket.description}</p>
 
-        {ticket.aiSummary && (
+        {ticket.aiSummary && canManage && (
           <div className="ai-summary">
             <span className="ai-summary-label">AI summary</span>
             <span>{ticket.aiSummary}</span>
@@ -147,6 +150,28 @@ export default function TicketDetail() {
                 </p>
               </>
             )}
+          </div>
+        )}
+
+        {user.role === "admin" && (
+          <div className="ticket-detail-actions" style={{ borderTop: "1px solid var(--border)", paddingTop: "16px" }}>
+            <span className="meta-label">Danger zone</span>
+            <div>
+              <button
+                className="btn btn-danger"
+                onClick={async () => {
+                  const ok = await confirm(
+                    "Are you sure you want to permanently delete this ticket? This cannot be undone."
+                  );
+                  if (ok) {
+                    await api.delete(`/tickets/${ticket._id}`);
+                    navigate("/");
+                  }
+                }}
+              >
+                Delete Ticket
+              </button>
+            </div>
           </div>
         )}
       </div>

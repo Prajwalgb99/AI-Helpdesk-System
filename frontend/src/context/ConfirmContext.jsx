@@ -9,9 +9,14 @@ const ConfirmContext = createContext(null);
 export function ConfirmProvider({ children }) {
   const [state, setState] = useState(null); // { message, resolve }
 
-  const confirm = useCallback((message) => {
+  const confirm = useCallback((message, options = {}) => {
     return new Promise((resolve) => {
-      setState({ message, resolve });
+      setState({
+        message,
+        resolve,
+        confirmText: options.confirmText || "Delete",
+        confirmClass: options.confirmClass || "btn-danger",
+      });
     });
   }, []);
 
@@ -32,8 +37,8 @@ export function ConfirmProvider({ children }) {
               <button className="btn btn-ghost" onClick={() => handle(false)}>
                 Cancel
               </button>
-              <button className="btn btn-danger" onClick={() => handle(true)}>
-                Delete
+              <button className={`btn ${state.confirmClass}`} onClick={() => handle(true)}>
+                {state.confirmText}
               </button>
             </div>
           </div>

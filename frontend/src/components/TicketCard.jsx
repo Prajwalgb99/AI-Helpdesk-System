@@ -12,7 +12,7 @@ export default function TicketCard({ ticket }) {
       </div>
       <h3 className="ticket-card-title">{ticket.title}</h3>
       <p className="ticket-card-desc">
-        {ticket.aiSummary || ticket.description}
+        {ticket.description}
       </p>
       <div className="ticket-card-bottom">
         <StatusBadge status={ticket.status} />

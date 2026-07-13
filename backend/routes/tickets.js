@@ -6,6 +6,7 @@ const {
   getTicketById,
   updateTicket,
   getBreachedTickets,
+  deleteTicket,
 } = require("../controllers/ticketController");
 const { protect, authorize, protectOrApiKey } = require("../middleware/auth");
 
@@ -20,6 +21,7 @@ router.route("/").post(createTicket).get(getTickets);
 router
   .route("/:id")
   .get(getTicketById)
-  .patch(authorize("agent", "admin"), updateTicket);
+  .patch(authorize("agent", "admin"), updateTicket)
+  .delete(authorize("admin"), deleteTicket);
 
 module.exports = router;

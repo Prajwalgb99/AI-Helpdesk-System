@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../utils/api";
 import { StatusBadge, PriorityBadge } from "../components/StatusBadge";
 
@@ -18,6 +19,50 @@ export default function AdminDashboard() {
     {}
   );
 
+  const exportToCSV = () => {
+    if (tickets.length === 0) return;
+    const headers = [
+      "ID",
+      "Title",
+      "Requester",
+      "Team",
+      "Priority",
+      "Status",
+      "Category",
+      "SLA Breached",
+      "Created At",
+    ];
+    const rows = tickets.map((t) => [
+      t._id,
+      `"${t.title.replace(/"/g, '""')}"`,
+      t.createdBy?.name || "Unknown",
+      t.assignedTeam?.name || "Unassigned",
+      t.priority,
+      t.status,
+      t.category,
+      t.isSlaBreached ? "Yes" : "No",
+      new Date(t.createdAt).toLocaleString(),
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `tickets_report_${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="page">
       <div className="page-header">
@@ -27,6 +72,9 @@ export default function AdminDashboard() {
             Every ticket across every team, organization-wide.
           </p>
         </div>
+        <button className="btn btn-ghost" onClick={exportToCSV}>
+          Export to CSV
+        </button>
       </div>
 
       <div className="stat-row">
@@ -65,17 +113,19 @@ export default function AdminDashboard() {
             {tickets.map((t) => (
               <tr key={t._id}>
                 <td>
-                  <div className="table-title">
-                    {t.title}
-                    {t.isSlaBreached && (
-                      <span className="sla-badge" style={{ marginLeft: "8px", backgroundColor: "#ffebeb", color: "#d93838", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "bold", border: "1px solid #fad2d2" }}>
-                        SLA Breached
-                      </span>
-                    )}
-                  </div>
-                  <div className="table-id">
-                    #{t._id.slice(-6).toUpperCase()} · {t.category}
-                  </div>
+                  <Link to={`/tickets/${t._id}`} className="table-link">
+                    <div className="table-title">
+                      {t.title}
+                      {t.isSlaBreached && (
+                        <span className="sla-badge" style={{ marginLeft: "8px", backgroundColor: "#ffebeb", color: "#d93838", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "bold", border: "1px solid #fad2d2" }}>
+                          SLA Breached
+                        </span>
+                      )}
+                    </div>
+                    <div className="table-id">
+                      #{t._id.slice(-6).toUpperCase()} · {t.category}
+                    </div>
+                  </Link>
                 </td>
                 <td>{t.createdBy?.name}</td>
                 <td>{t.assignedTeam?.name || "Unassigned"}</td>

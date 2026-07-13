@@ -171,10 +171,22 @@ const updateTicket = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, ticket });
 });
 
+// DELETE /api/tickets/:id — admin only
+const deleteTicket = asyncHandler(async (req, res) => {
+  const ticket = await Ticket.findById(req.params.id);
+  if (!ticket) {
+    throw new ApiError(404, "Ticket not found");
+  }
+
+  await ticket.deleteOne();
+  res.status(200).json({ success: true, message: "Ticket deleted" });
+});
+
 module.exports = {
   createTicket,
   getTickets,
   getTicketById,
   updateTicket,
   getBreachedTickets,
+  deleteTicket,
 };
