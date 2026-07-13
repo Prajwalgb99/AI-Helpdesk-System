@@ -3,13 +3,28 @@ const { ApiError } = require("../middleware/errorHandler");
 const asyncHandler = require("../middleware/asyncHandler");
 const { classifyTicket } = require("../services/groqService");
 
+// Helper to calculate SLA breach status dynamically based on priority.
+// Urgent = 2 hours, High = 4 hours, Medium = 24 hours, Low/Default = 72 hours.
+const isTicketSlaBreached = (ticket) => {
+  if (ticket.status === "resolved") return false;
+
+  const hoursElapsed =
+    (Date.now() - new Date(ticket.createdAt).getTime()) / (1000 * 60 * 60);
+
+  switch (ticket.priority) {
+    case "urgent":
+      return hoursElapsed > 2;
+    case "high":
+      return hoursElapsed > 4;
+    case "medium":
+      return hoursElapsed > 24;
+    case "low":
+    default:
+      return hoursElapsed > 72;
+  }
+};
+
 // POST /api/tickets — any logged-in user.
-// No manual category/priority from the client anymore — Groq decides
-// both from the title + description. If Groq is down, rate-limited, or
-// returns something we can't parse, we deliberately swallow that error
-// here (not asyncHandler's job) and fall back to safe defaults, because
-// a ticket failing to save due to an AI outage would be a much worse
-// bug than a ticket briefly sitting under the wrong category.
 const createTicket = asyncHandler(async (req, res) => {
   const { title, description, assignedTeam } = req.body;
 
@@ -36,13 +51,28 @@ const createTicket = asyncHandler(async (req, res) => {
     createdBy: req.user._id,
   });
 
+  // Asynchronously fire webhook to n8n if configured
+  if (process.env.N8N_WEBHOOK_URL) {
+    fetch(process.env.N8N_WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: ticket._id,
+        category: ticket.category,
+        priority: ticket.priority,
+        title: ticket.title,
+      }),
+    }).catch((err) => {
+      console.error("Failed to send webhook to n8n:", err.message);
+    });
+  }
+
   res.status(201).json({ success: true, ticket });
 });
 
 // GET /api/tickets — role-aware.
-// This single function replaces three separate endpoints by branching
-// on req.user.role, which is the cleanest place to put that logic:
-// the route stays one line, and the "who can see what" rule lives here.
 const getTickets = asyncHandler(async (req, res) => {
   let filter = {};
 
@@ -59,7 +89,37 @@ const getTickets = asyncHandler(async (req, res) => {
     .populate("assignedTeam", "name")
     .sort({ createdAt: -1 });
 
-  res.status(200).json({ success: true, count: tickets.length, tickets });
+  // Map and attach dynamic SLA status
+  const ticketsWithSla = tickets.map((t) => {
+    const tObj = t.toObject();
+    tObj.isSlaBreached = isTicketSlaBreached(t);
+    return tObj;
+  });
+
+  res
+    .status(200)
+    .json({ success: true, count: tickets.length, tickets: ticketsWithSla });
+});
+
+// GET /api/tickets/breached — API-Key or role protected
+const getBreachedTickets = asyncHandler(async (req, res) => {
+  // Query all tickets that are not resolved
+  const tickets = await Ticket.find({ status: { $ne: "resolved" } })
+    .populate("createdBy", "name email")
+    .populate("assignedAgent", "name email")
+    .populate("assignedTeam", "name")
+    .sort({ createdAt: -1 });
+
+  // Filter for SLA breaches and format output
+  const breached = tickets
+    .filter(isTicketSlaBreached)
+    .map((t) => {
+      const tObj = t.toObject();
+      tObj.isSlaBreached = true;
+      return tObj;
+    });
+
+  res.status(200).json(breached);
 });
 
 // GET /api/tickets/:id
@@ -79,11 +139,13 @@ const getTicketById = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You do not have access to this ticket");
   }
 
-  res.status(200).json({ success: true, ticket });
+  const tObj = ticket.toObject();
+  tObj.isSlaBreached = isTicketSlaBreached(ticket);
+
+  res.status(200).json({ success: true, ticket: tObj });
 });
 
 // PATCH /api/tickets/:id — agent/admin only (enforced by route middleware).
-// Handles status changes and agent self-assignment in one place.
 const updateTicket = asyncHandler(async (req, res) => {
   const { status, assignedAgent, priority } = req.body;
 
@@ -109,4 +171,10 @@ const updateTicket = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, ticket });
 });
 
-module.exports = { createTicket, getTickets, getTicketById, updateTicket };
+module.exports = {
+  createTicket,
+  getTickets,
+  getTicketById,
+  updateTicket,
+  getBreachedTickets,
+};

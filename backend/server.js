@@ -9,6 +9,7 @@ const ticketRoutes = require("./routes/tickets");
 const teamRoutes = require("./routes/teams");
 const userRoutes = require("./routes/users");
 const aiRoutes = require("./routes/ai");
+const webhookRoutes = require("./routes/webhooks");
 
 connectDB();
 
@@ -24,6 +25,7 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/teams", teamRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/webhooks", webhookRoutes);
 
 // Order matters: notFound catches anything no route matched,
 // errorHandler is last so it catches everything thrown/next(err)'d above it.

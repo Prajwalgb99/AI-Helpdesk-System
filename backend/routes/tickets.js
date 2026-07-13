@@ -5,10 +5,14 @@ const {
   getTickets,
   getTicketById,
   updateTicket,
+  getBreachedTickets,
 } = require("../controllers/ticketController");
-const { protect, authorize } = require("../middleware/auth");
+const { protect, authorize, protectOrApiKey } = require("../middleware/auth");
 
-// Every ticket route requires a logged-in user, so protect() applies to all.
+// Public/API-Key endpoint for cron jobs (or fallback to authenticated users)
+router.get("/breached", protectOrApiKey, getBreachedTickets);
+
+// Every ticket route below requires a logged-in user, so protect() applies to all.
 router.use(protect);
 
 router.route("/").post(createTicket).get(getTickets);

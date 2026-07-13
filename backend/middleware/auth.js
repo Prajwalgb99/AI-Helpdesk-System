@@ -38,4 +38,27 @@ const authorize = (...allowedRoles) => {
   };
 };
 
-module.exports = { protect, authorize };
+// Allows API Key validation OR falls back to standard JWT authentication.
+const protectOrApiKey = (req, res, next) => {
+  const apiKey = req.headers["x-api-key"];
+  if (apiKey && apiKey === process.env.N8N_API_KEY) {
+    req.user = {
+      role: "admin",
+      name: "n8n Automation Service",
+      email: "n8n@deskline.com",
+    };
+    return next();
+  }
+  protect(req, res, next);
+};
+
+// Strict check for API key (only n8n or authorized external services allowed).
+const verifyApiKey = (req, res, next) => {
+  const apiKey = req.headers["x-api-key"];
+  if (!apiKey || apiKey !== process.env.N8N_API_KEY) {
+    throw new ApiError(401, "Unauthorized: Invalid or missing API key");
+  }
+  next();
+};
+
+module.exports = { protect, authorize, protectOrApiKey, verifyApiKey };

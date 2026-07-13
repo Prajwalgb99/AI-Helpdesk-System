@@ -72,7 +72,14 @@ export default function AgentDashboard() {
             {visible.map((t) => (
               <tr key={t._id}>
                 <td>
-                  <div className="table-title">{t.title}</div>
+                  <div className="table-title">
+                    {t.title}
+                    {t.isSlaBreached && (
+                      <span className="sla-badge" style={{ marginLeft: "8px", backgroundColor: "#ffebeb", color: "#d93838", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "bold", border: "1px solid #fad2d2" }}>
+                        SLA Breached
+                      </span>
+                    )}
+                  </div>
                   <div className="table-id">
                     #{t._id.slice(-6).toUpperCase()} · {t.category}
                   </div>
