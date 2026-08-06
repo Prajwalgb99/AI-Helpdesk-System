@@ -14,27 +14,7 @@
   <img src="https://img.shields.io/badge/Deployed-Render%20%2B%20Vercel-5c4ee5?style=for-the-badge" />
 </p>
 
----
 
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Live Demo & Screenshots](#live-demo--screenshots)
-3. [Core Features & Capabilities](#core-features--capabilities)
-4. [System Architecture](#system-architecture)
-5. [n8n Automation Workflows](#n8n-automation-workflows)
-6. [AI Integration — Groq / Llama 3.3](#ai-integration--groq--llama-33)
-7. [System Roles & Access Control (RBAC)](#system-roles--access-control-rbac)
-8. [Tech Stack & Key Design Decisions](#tech-stack--key-design-decisions)
-9. [Project File Structure](#project-file-structure)
-10. [API Reference](#api-reference)
-11. [SLA Tracking Logic](#sla-tracking-logic)
-12. [Environment Configuration](#environment-configuration)
-13. [Local Development Setup](#local-development-setup)
-14. [Production Deployment](#production-deployment)
-15. [Interview Q&A Cheatsheet](#interview-qa-cheatsheet)
-
----
 
 ## Project Overview
 
