@@ -4,7 +4,7 @@ import axios from "axios";
 // JWT if we have one — that's the only reason this file exists instead
 // of just calling axios directly everywhere.
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
 
 api.interceptors.request.use((config) => {

@@ -94,7 +94,7 @@ export default function ManageTeams() {
         <input
           value={newTeamName}
           onChange={(e) => setNewTeamName(e.target.value)}
-          placeholder="New team name, e.g. Networking"
+          placeholder="New team name, e.g. Network Team"
         />
         <button className="btn btn-primary">Create team</button>
       </form>

@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
 import { StatusBadge, PriorityBadge } from "../components/StatusBadge";
+import SearchFilterBar from "../components/SearchFilterBar";
 
 export default function AgentDashboard() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatuses, setSelectedStatuses] = useState([]);
+  const [selectedPriorities, setSelectedPriorities] = useState([]);
 
   const loadTickets = async () => {
     setLoading(true);
@@ -26,8 +29,19 @@ export default function AgentDashboard() {
     );
   };
 
-  const visible =
-    filter === "all" ? tickets : tickets.filter((t) => t.status === filter);
+  const visible = tickets.filter((t) => {
+    const query = searchQuery.toLowerCase().trim();
+    const titleMatch = t.title.toLowerCase().includes(query);
+    const descMatch = t.description ? t.description.toLowerCase().includes(query) : false;
+    const requesterMatch = t.createdBy?.name ? t.createdBy.name.toLowerCase().includes(query) : false;
+    const idMatch = t._id.slice(-6).toLowerCase().includes(query);
+    const searchMatch = !query || titleMatch || descMatch || requesterMatch || idMatch;
+
+    const statusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(t.status);
+    const priorityMatch = selectedPriorities.length === 0 || selectedPriorities.includes(t.priority);
+
+    return searchMatch && statusMatch && priorityMatch;
+  });
 
   return (
     <div className="page">
@@ -38,27 +52,26 @@ export default function AgentDashboard() {
             Tickets routed to your team. Update status as you work through them.
           </p>
         </div>
-        <div className="filter-tabs">
-          {["all", "open", "in-progress", "resolved"].map((f) => (
-            <button
-              key={f}
-              className={`filter-tab ${filter === f ? "active" : ""}`}
-              onClick={() => setFilter(f)}
-            >
-              {f.replace("-", " ")}
-            </button>
-          ))}
-        </div>
       </div>
 
       {loading ? (
         <div className="page-loader">Loading tickets…</div>
-      ) : visible.length === 0 ? (
-        <div className="empty-state">
-          <p>Nothing here.</p>
-          <span>No tickets match this filter right now.</span>
-        </div>
       ) : (
+        <>
+          <SearchFilterBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            selectedStatuses={selectedStatuses}
+            setSelectedStatuses={setSelectedStatuses}
+            selectedPriorities={selectedPriorities}
+            setSelectedPriorities={setSelectedPriorities}
+          />
+          {visible.length === 0 ? (
+            <div className="empty-state" style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", padding: "48px 24px" }}>
+              <p>No matches found</p>
+              <span>Try adjusting your search query or filter tags.</span>
+            </div>
+          ) : (
         <table className="table">
           <thead>
             <tr>
@@ -109,6 +122,8 @@ export default function AgentDashboard() {
             ))}
           </tbody>
         </table>
+      )}
+      </>
       )}
     </div>
   );

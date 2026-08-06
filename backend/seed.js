@@ -13,12 +13,19 @@ const User = require("./models/User");
 const Team = require("./models/Team");
 const Ticket = require("./models/Ticket");
 
-const TEAMS = ["Networking", "Hardware Support", "Access & Security"];
+const TEAMS = [
+  "Network Team",
+  "Hardware Team",
+  "Software Team",
+  "Access Team",
+  "Billing Team",
+  "General Support"
+];
 
 const AGENTS = [
-  { name: "Ravi Kumar", email: "ravi.agent@deskline.com", team: "Networking" },
-  { name: "Ananya Rao", email: "ananya.agent@deskline.com", team: "Hardware Support" },
-  { name: "Farhan Sheikh", email: "farhan.agent@deskline.com", team: "Access & Security" },
+  { name: "Ravi Kumar", email: "ravi.agent@deskline.com", team: "Network Team" },
+  { name: "Ananya Rao", email: "ananya.agent@deskline.com", team: "Hardware Team" },
+  { name: "Farhan Sheikh", email: "farhan.agent@deskline.com", team: "Access Team" },
 ];
 
 const USERS = [
@@ -41,7 +48,7 @@ const TICKETS = [
     status: "open",
     aiSummary: "VPN connection repeatedly drops on all networks since this morning.",
     requester: "meera@deskline.com",
-    team: "Networking",
+    team: "Network Team",
   },
   {
     title: "Request access to shared Finance drive",
@@ -52,7 +59,7 @@ const TICKETS = [
     status: "in-progress",
     aiSummary: "New finance team member requesting access to shared Finance drive.",
     requester: "kabir@deskline.com",
-    team: "Access & Security",
+    team: "Access Team",
   },
   {
     title: "Laptop won't turn on after Windows update",
@@ -63,7 +70,7 @@ const TICKETS = [
     status: "open",
     aiSummary: "Laptop stuck at boot logo after a Windows update; power-cycling didn't help.",
     requester: "priya@deskline.com",
-    team: "Hardware Support",
+    team: "Hardware Team",
   },
   {
     title: "Second monitor not detected",
@@ -74,7 +81,7 @@ const TICKETS = [
     status: "resolved",
     aiSummary: "External monitor not detected despite reconnecting the HDMI cable.",
     requester: "meera@deskline.com",
-    team: "Hardware Support",
+    team: "Hardware Team",
   },
   {
     title: "Can't connect to office wifi from new phone",
@@ -85,7 +92,7 @@ const TICKETS = [
     status: "open",
     aiSummary: "New phone fails wifi authentication when joining the office network.",
     requester: "kabir@deskline.com",
-    team: "Networking",
+    team: "Network Team",
   },
   {
     title: "Locked out of email account",
@@ -96,7 +103,7 @@ const TICKETS = [
     status: "in-progress",
     aiSummary: "Email account locked after repeated failed login attempts.",
     requester: "priya@deskline.com",
-    team: "Access & Security",
+    team: "Access Team",
   },
   {
     title: "Invoice software showing wrong tax calculation",
@@ -107,7 +114,7 @@ const TICKETS = [
     status: "open",
     aiSummary: "Billing software miscalculating GST on invoices since the recent update.",
     requester: "kabir@deskline.com",
-    team: "Access & Security",
+    team: "Access Team",
   },
   {
     title: "How do I set up email on my personal phone?",
@@ -118,7 +125,7 @@ const TICKETS = [
     status: "resolved",
     aiSummary: "Requesting setup instructions for work email on a personal Android phone.",
     requester: "meera@deskline.com",
-    team: "Hardware Support",
+    team: "Hardware Team",
   },
 ];
 
