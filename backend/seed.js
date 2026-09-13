@@ -26,6 +26,9 @@ const AGENTS = [
   { name: "Ravi Kumar", email: "ravi.agent@deskline.com", team: "Network Team" },
   { name: "Ananya Rao", email: "ananya.agent@deskline.com", team: "Hardware Team" },
   { name: "Farhan Sheikh", email: "farhan.agent@deskline.com", team: "Access Team" },
+  { name: "Sneha Patel", email: "sneha.agent@deskline.com", team: "Software Team" },
+  { name: "Vikram Malhotra", email: "vikram.agent@deskline.com", team: "Billing Team" },
+  { name: "Pooja Sharma", email: "pooja.agent@deskline.com", team: "General Support" },
 ];
 
 const USERS = [
@@ -114,7 +117,7 @@ const TICKETS = [
     status: "open",
     aiSummary: "Billing software miscalculating GST on invoices since the recent update.",
     requester: "kabir@deskline.com",
-    team: "Access Team",
+    team: "Billing Team",
   },
   {
     title: "How do I set up email on my personal phone?",
@@ -125,7 +128,7 @@ const TICKETS = [
     status: "resolved",
     aiSummary: "Requesting setup instructions for work email on a personal Android phone.",
     requester: "meera@deskline.com",
-    team: "Hardware Team",
+    team: "Software Team",
   },
 ];
 
@@ -222,13 +225,16 @@ async function run() {
   console.log(`Seeded ${TICKETS.length} sample tickets (skipping any that already existed)`);
 
   console.log("\nSeed complete. Login with any of:");
-  console.log("  admin@deskline.com     / admin123   (admin)");
-  console.log("  ravi.agent@deskline.com / agent123  (agent — Networking)");
-  console.log("  ananya.agent@deskline.com / agent123 (agent — Hardware Support)");
-  console.log("  farhan.agent@deskline.com / agent123 (agent — Access & Security)");
-  console.log("  meera@deskline.com     / user123    (user)");
-  console.log("  kabir@deskline.com     / user123    (user)");
-  console.log("  priya@deskline.com     / user123    (user)");
+  console.log("  admin@deskline.com         / admin123   (admin)");
+  console.log("  ravi.agent@deskline.com     / agent123  (agent — Network Team)");
+  console.log("  ananya.agent@deskline.com   / agent123  (agent — Hardware Team)");
+  console.log("  farhan.agent@deskline.com   / agent123  (agent — Access Team)");
+  console.log("  sneha.agent@deskline.com    / agent123  (agent — Software Team)");
+  console.log("  vikram.agent@deskline.com   / agent123  (agent — Billing Team)");
+  console.log("  pooja.agent@deskline.com    / agent123  (agent — General Support)");
+  console.log("  meera@deskline.com         / user123    (user)");
+  console.log("  kabir@deskline.com         / user123    (user)");
+  console.log("  priya@deskline.com         / user123    (user)");
 
   process.exit(0);
 }

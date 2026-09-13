@@ -3,7 +3,7 @@
 // you can read top to bottom. Requires Node 18+ (global fetch).
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "openai/gpt-oss-120b";
 
 const VALID_CATEGORIES = [
   "hardware",

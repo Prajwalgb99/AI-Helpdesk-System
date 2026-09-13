@@ -26,9 +26,6 @@ const ticketSchema = new mongoose.Schema(
       enum: ["hardware", "software", "network", "access", "billing", "other"],
       default: "other",
     },
-    // One-line summary written by Groq at creation time — shown in the
-    // ticket list/detail so an agent can triage without opening every
-    // ticket to read the full description.
     aiSummary: {
       type: String,
       default: "",
@@ -38,21 +35,18 @@ const ticketSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    // Which team the ticket is routed to (set at creation, based on category
-    // or chosen by the user — kept simple here).
     assignedTeam: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
       default: null,
     },
-    // A specific agent can pick it up / be assigned within the team.
     assignedAgent: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null,
     },
   },
-  { timestamps: true } // gives createdAt / updatedAt automatically
+  { timestamps: true }
 );
 
 // Speeds up the two most common queries: "my tickets" and "my team's tickets"

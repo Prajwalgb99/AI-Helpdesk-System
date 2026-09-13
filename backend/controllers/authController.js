@@ -3,8 +3,6 @@ const User = require("../models/User");
 const { ApiError } = require("../middleware/errorHandler");
 const asyncHandler = require("../middleware/asyncHandler");
 
-// Small helper — every place that logs a user in needs a token,
-// so we don't repeat the jwt.sign(...) call three times.
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -12,9 +10,6 @@ const generateToken = (id) => {
 };
 
 // POST /api/auth/signup
-// Note: role defaults to "user" here on purpose. Agents/admins are
-// promoted later by an admin (see userController.updateUserRole),
-// so nobody can self-signup as an admin.
 const signup = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 

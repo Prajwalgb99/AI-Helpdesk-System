@@ -13,15 +13,16 @@ const { protect, authorize, protectOrApiKey } = require("../middleware/auth");
 // Public/API-Key endpoint for cron jobs (or fallback to authenticated users)
 router.get("/breached", protectOrApiKey, getBreachedTickets);
 
-// Every ticket route below requires a logged-in user, so protect() applies to all.
 router.use(protect);
 
-router.route("/").post(createTicket).get(getTickets);
+router.post("/", createTicket);
 
-router
-  .route("/:id")
-  .get(getTicketById)
-  .patch(authorize("agent", "admin"), updateTicket)
-  .delete(authorize("admin"), deleteTicket);
+router.get("/", getTickets);
+
+router.get("/:id", getTicketById);
+
+router.patch("/:id", authorize("agent", "admin"), updateTicket);
+
+router.delete("/:id", authorize("admin"), deleteTicket);
 
 module.exports = router;

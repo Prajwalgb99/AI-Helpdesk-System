@@ -21,9 +21,10 @@ const suggestReply = asyncHandler(async (req, res) => {
   try {
     draft = await generateSuggestedReply(ticket);
   } catch (err) {
+    console.error("Groq suggestReply error:", err.message);
     throw new ApiError(
       502,
-      "The AI reply suggestion is temporarily unavailable. Please try again shortly."
+      `AI suggestion error: ${err.message}`
     );
   }
 

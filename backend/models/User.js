@@ -19,10 +19,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
-      select: false, // never return password by default in queries
+      select: false,
     },
-    // Single collection, role-based. Simpler than three User models
-    // and easier to reason about for auth middleware.
+
     role: {
       type: String,
       enum: ["user", "agent", "admin"],
@@ -39,8 +38,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash the password only when it's new or changed — avoids re-hashing
-// an already-hashed password on unrelated profile updates.
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
@@ -48,7 +45,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Instance method so controllers can just call user.comparePassword(pw)
 userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
