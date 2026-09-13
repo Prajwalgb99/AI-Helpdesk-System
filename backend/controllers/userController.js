@@ -13,6 +13,11 @@ const getUsers = asyncHandler(async (req, res) => {
 const updateUserRole = asyncHandler(async (req, res) => {
   const { role, team } = req.body;
 
+  // Prevent an admin from demoting or changing their own role
+  if (req.params.id === req.user._id.toString() && role && role !== req.user.role) {
+    throw new ApiError(400, "You cannot demote or change your own role");
+  }
+
   const user = await User.findById(req.params.id);
   if (!user) throw new ApiError(404, "User not found");
 

@@ -1,7 +1,3 @@
-// All Groq API interaction lives in this one file, on purpose — no
-// framework, no agent loop, just two plain fetch calls with prompts
-// you can read top to bottom. Requires Node 18+ (global fetch).
-
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "openai/gpt-oss-120b";
 
@@ -15,12 +11,6 @@ const VALID_CATEGORIES = [
 ];
 const VALID_PRIORITIES = ["low", "medium", "high"];
 
-/**
- * Thin wrapper around the Groq chat completions endpoint.
- * Throws on any non-2xx response or network failure — callers decide
- * how to handle that (see ticketController for the "fall back to
- * defaults" pattern, and aiController for the "surface an error" pattern).
- */
 async function callGroq(messages, { temperature = 0.2, maxTokens = 300 } = {}) {
   const response = await fetch(GROQ_URL, {
     method: "POST",
@@ -83,7 +73,7 @@ async function classifyTicket(title, description) {
     { role: "user", content: userPrompt },
   ]);
 
-  const parsed = JSON.parse(raw); // if the model didn't return valid JSON, this throws and the caller falls back to defaults
+  const parsed = JSON.parse(raw);
 
   return {
     category: VALID_CATEGORIES.includes(parsed.category) ? parsed.category : "other",

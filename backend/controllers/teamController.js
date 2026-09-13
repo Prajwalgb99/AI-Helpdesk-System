@@ -36,8 +36,6 @@ const updateTeam = asyncHandler(async (req, res) => {
   if (members) team.members = members;
   await team.save();
 
-  // Keep each agent's User.team pointer in sync with the team roster,
-  // so ticketController's "agent sees own team's tickets" filter stays correct.
   if (members) {
     await User.updateMany({ team: team._id }, { $set: { team: null } });
     await User.updateMany(

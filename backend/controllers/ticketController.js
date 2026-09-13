@@ -3,8 +3,6 @@ const { ApiError } = require("../middleware/errorHandler");
 const asyncHandler = require("../middleware/asyncHandler");
 const { classifyTicket } = require("../services/groqService");
 
-// Helper to calculate SLA breach status dynamically based on priority.
-// Urgent = 2 hours, High = 4 hours, Medium = 24 hours, Low/Default = 72 hours.
 const isTicketSlaBreached = (ticket) => {
   if (ticket.status === "resolved") return false;
 
@@ -103,7 +101,6 @@ const getTickets = asyncHandler(async (req, res) => {
 
 // GET /api/tickets/breached — API-Key or role protected
 const getBreachedTickets = asyncHandler(async (req, res) => {
-  // Query all tickets that are not resolved
   const tickets = await Ticket.find({ status: { $ne: "resolved" } })
     .populate("createdBy", "name email")
     .populate("assignedAgent", "name email")

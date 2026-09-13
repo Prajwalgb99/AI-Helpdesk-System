@@ -59,36 +59,65 @@ export default function ManageUsers() {
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
-              <tr key={u._id}>
-                <td>{u.name}</td>
-                <td>{u.email}</td>
-                <td>
-                  <select
-                    value={u.role}
-                    onChange={(e) => changeRole(u._id, e.target.value)}
-                    className="table-select"
-                  >
-                    <option value="user">User</option>
-                    <option value="agent">Agent</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </td>
-                <td>{u.team?.name || "—"}</td>
-                <td>
-                  {u._id === currentUser.id ? (
-                    <span className="table-hint">That's you</span>
-                  ) : (
-                    <button
-                      className="btn btn-ghost btn-small"
-                      onClick={() => removeUser(u._id, u.name)}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {users.map((u) => {
+              const isSelf = Boolean(
+                (currentUser?._id && String(u._id) === String(currentUser._id)) ||
+                (currentUser?.email && u.email?.toLowerCase() === currentUser.email?.toLowerCase())
+              );
+
+              return (
+                <tr key={u._id}>
+                  <td>
+                    {u.name}
+                    {isSelf && (
+                      <span className="table-hint" style={{ marginLeft: "8px" }}>
+                        (You)
+                      </span>
+                    )}
+                  </td>
+                  <td>{u.email}</td>
+                  <td>
+                    {isSelf ? (
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "6px 4px",
+                          fontWeight: 500,
+                          fontSize: "13.5px",
+                          color: "var(--text-primary)",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {u.role}
+                      </span>
+                    ) : (
+                      <select
+                        value={u.role}
+                        onChange={(e) => changeRole(u._id, e.target.value)}
+                        className="table-select"
+                      >
+                        <option value="user">User</option>
+                        <option value="agent">Agent</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    )}
+                  </td>
+                  <td>{u.team?.name || "—"}</td>
+                  <td>
+                    {isSelf ? (
+                      <span className="table-hint">—</span>
+                    ) : (
+                      <button
+                        className="btn btn-ghost btn-small"
+                        onClick={() => removeUser(u._id, u.name)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

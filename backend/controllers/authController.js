@@ -25,7 +25,7 @@ const signup = asyncHandler(async (req, res) => {
     success: true,
     token,
     user: {
-      id: user._id,
+      _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
@@ -53,7 +53,7 @@ const login = asyncHandler(async (req, res) => {
     success: true,
     token,
     user: {
-      id: user._id,
+      _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
@@ -64,7 +64,16 @@ const login = asyncHandler(async (req, res) => {
 
 // GET /api/auth/me — used by the frontend on refresh to restore session
 const getMe = asyncHandler(async (req, res) => {
-  res.status(200).json({ success: true, user: req.user });
+  res.status(200).json({
+    success: true,
+    user: {
+      _id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+      team: req.user.team,
+    },
+  });
 });
 
 module.exports = { signup, login, getMe };
