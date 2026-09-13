@@ -8,8 +8,7 @@ const getUsers = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, count: users.length, users });
 });
 
-// PATCH /api/users/:id — admin promotes/demotes a user and assigns a team.
-// This is the ONLY way a user becomes an agent or admin (never at signup).
+// PATCH /api/users/:id 
 const updateUserRole = asyncHandler(async (req, res) => {
   const { role, team } = req.body;
 
@@ -22,7 +21,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError(404, "User not found");
 
   if (role) user.role = role;
-  if (role !== "agent") user.team = null; // only agents keep a team
+  if (role !== "agent") user.team = null; //If a user is converted to a regular user or an admin, their team field is reset to null.
   else if (team) user.team = team;
 
   await user.save();
@@ -31,10 +30,6 @@ const updateUserRole = asyncHandler(async (req, res) => {
 
 // DELETE /api/users/:id — admin only
 const deleteUser = asyncHandler(async (req, res) => {
-  // An admin can delete any OTHER account, but not their own — otherwise
-  // an admin could lock themselves (and everyone else) out of the system.
-  // This check has to live here, not just in the frontend, since anyone
-  // could call the API directly.
   if (req.params.id === req.user._id.toString()) {
     throw new ApiError(400, "You cannot delete your own account");
   }
