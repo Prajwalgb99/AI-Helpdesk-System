@@ -36,6 +36,7 @@ By intercepting every ticket submission, Deskline automatically classifies the c
 
 <p align="center">
   <img src="./screenshots/admin-dashboard.png" alt="Admin Dashboard" width="900">
+  <img src="./screenshots/admin-dashboard3.png" alt="Admin Dashboard3" width="900">
 </p>
 
 <p align="center">
