@@ -310,3 +310,23 @@ cd frontend && npm run dev
 4. Add a **Switch** node reading `{{ $json.body.category }}` with 6 routing branches
 5. Add a **Set** node per branch setting `teamName` to the exact team name string
 6. Connect all Set nodes → one **HTTP Request** node calling `POST http://localhost:5000/api/webhooks/n8n/assign-team` with header `x-api-key: <your N8N_API_KEY>`
+
+---
+
+## 🧪 Testing & Performance Benchmarks
+
+Deskline features a complete automated testing pyramid covering Unit, Integration (Jest + Supertest), Resilience/Mocking, and Concurrency Load testing.
+
+### Run Automated Test Suite (44 Tests, 100% Pass Rate):
+```bash
+cd backend
+npm test
+```
+
+### Run Concurrency & Latency Benchmark:
+```bash
+cd backend
+node scripts/loadTest.js http://localhost:5000/api/health 100 10
+```
+
+

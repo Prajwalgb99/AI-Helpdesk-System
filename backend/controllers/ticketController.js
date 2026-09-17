@@ -3,24 +3,7 @@ const { ApiError } = require("../middleware/errorHandler");
 const asyncHandler = require("../middleware/asyncHandler");
 const { classifyTicket } = require("../services/groqService");
 
-const isTicketSlaBreached = (ticket) => {
-  if (ticket.status === "resolved") return false;
-
-  const hoursElapsed =
-    (Date.now() - new Date(ticket.createdAt).getTime()) / (1000 * 60 * 60);
-
-  switch (ticket.priority) {
-    case "urgent":
-      return hoursElapsed > 2;
-    case "high":
-      return hoursElapsed > 4;
-    case "medium":
-      return hoursElapsed > 24;
-    case "low":
-    default:
-      return hoursElapsed > 72;
-  }
-};
+const { isTicketSlaBreached } = require("../utils/sla");
 
 // POST /api/tickets — any logged-in user.
 const createTicket = asyncHandler(async (req, res) => {
@@ -49,8 +32,8 @@ const createTicket = asyncHandler(async (req, res) => {
     createdBy: req.user._id,
   });
 
-  // Asynchronously fire webhook to n8n if configured
-  if (process.env.N8N_WEBHOOK_URL) {
+  // Asynchronously fire webhook to n8n if configured and not in test environment
+  if (process.env.N8N_WEBHOOK_URL && process.env.NODE_ENV !== "test") {
     fetch(process.env.N8N_WEBHOOK_URL, {
       method: "POST",
       headers: {
